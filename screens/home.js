@@ -1,35 +1,16 @@
 import * as React from 'react';
-import { Button, Text, View, TextInput } from 'react-native';
+import { Button, Text, View, TextInput, Image} from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import BarraSuperior from '../components/barraSuperior';
 import axios from "axios"
 
+import {colors} from "../colors"
 
-const traerDatos = async (fechaInicial, fechaFinal)=>{
+import { AntDesign } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-    var obj = {}
-    var arr=[]
-    for(let año=fechaInicial; año<=fechaFinal; año++){
-        const res = await axios.get(`https://data.opendatasoft.com/api/records/1.0/search/?dataset=commodity-prices%40public&q=&facet=date&facet=commodity&refine.date=${año}`)
-        let data = res.data.records
-        let aux = []
-        data.map((comm)=>{
-            obj[comm.fields.commodity]? null: obj[comm.fields.commodity]=[]
-            if(!aux.includes(comm.fields.commodity)){
-                obj[comm.fields.commodity] = [...obj[comm.fields.commodity],{commodity: comm.fields.commodity, price: comm.fields.price_index, año}]
-            }
-            aux.push(comm.fields.commodity)
-        })
-    }
-
-    for (const property in obj) {
-        // console.log(property)
-        arr.push({[property]:obj[property]})
-    }
-    console.log(arr)
-    console.log(arr.length)
-    // console.log(arr[5])
-}
 
 export default function HomeScreen({ navigation }) {
 
@@ -37,14 +18,40 @@ export default function HomeScreen({ navigation }) {
     const [fechaFinal, setFechaFinal]= React.useState("")
 
     return (
-      <View style={{ flex: 10, maxWidth:"100%" }}>
+      <View style={{ flex: 10, maxWidth:"100%", }}>
             <View style={{flex:1}}>
                 <BarraSuperior navigation={navigation} style={{flex:1}}/>
             </View>
-            <View style={{flex:9, }}>
-                    
+            <View style={{flex:9, backgroundColor:colors.fondo, justifyContent:"center", alignItems:"center" }}>
 
-                <Text>perfil</Text>
+                <View style={{ height:200,marginBottom:"5%" }}>
+                    <Image
+                        style={{ width: 200, height: 200, borderRadius:100, borderWidth:5, borderColor:colors.primario}}
+                        source={require('../perfil.jpg')}
+                    />
+
+                </View>
+                <View style={{flex:1, backgroundColor:colors.fuerte, maxHeight:"20%", width:"80%", marginBottom:"5%",borderRadius:15, justifyContent:"center"}}>
+                    <Text style={{textAlign:"center", fontSize:25,fontWeight:"bold", color:colors.blanco}}>Hidalgo Santiago</Text>
+                    <Text style={{textAlign:"center", fontSize:20, color:colors.blanco}}>Santi</Text>
+                </View>    
+                <View style={{flex:1, backgroundColor:colors.blanco, maxHeight:"20%", width:"80%" ,borderRadius:15, justifyContent:"center"}}>
+                    <View style={{flexDirection:"row", justifyContent:"center", marginVertical:"1.5%"}}>
+                        <MaterialIcons name="work-outline" size={24} color={colors.fuerte} />
+                        <Text style={{textAlign:"left", marginHorizontal:"2%", fontSize:15, color:colors.fuerte}}>React Native Developer</Text>
+
+                    </View>
+                    <View style={{flexDirection:"row", justifyContent:"center", marginVertical:"1.5%"}}>
+                        <Ionicons name="mail-outline" size={24} color={colors.fuerte} />
+                        <Text style={{textAlign:"left", marginHorizontal:"2%", fontSize:15, color:colors.fuerte}}>santiagonicolashq@gmail.com</Text>
+                    </View>
+                    <View style={{flexDirection:"row", justifyContent:"center", marginVertical:"1.5%"}}>
+                        <MaterialCommunityIcons name="map-marker-outline" size={24} color={colors.fuerte} />   
+                        <Text style={{textAlign:"left", marginHorizontal:"2%", fontSize:15, color:colors.fuerte}}>Mendoza, Argentina</Text>
+                    </View>
+                    
+                </View>    
+                
             </View>
       </View>
     );
