@@ -8,17 +8,28 @@ import { NavigationContainer } from '@react-navigation/native';
 import HomeScreen from './screens/home';
 import Cotizacion from './screens/cotizacion';
 
+import { Provider } from 'react-redux';
+import { createStore } from 'redux';
+import Reducer from './redux/reducers';
+
+
+const store = createStore(Reducer);
+
 
 const Drawer = createDrawerNavigator();
 
 export default function App() {
   return (
+    <Provider store={store}>
+
     <NavigationContainer>
       <Drawer.Navigator initialRouteName="Home" screenOptions={{headerShown: false, drawerType: 'slide',}}>
           <Drawer.Screen name="Home" component={HomeScreen} />
           <Drawer.Screen name="Cotizacion periodos" component={Cotizacion} />
       </Drawer.Navigator>
     </NavigationContainer>
+    </Provider>
+
   );
 }
 
