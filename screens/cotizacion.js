@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, View, Text, TextInput, TouchableOpacity, ScrollView} from 'react-native';
+import { Button, View, Text, TextInput, TouchableOpacity, ScrollView, Modal, Pressable, Image} from 'react-native';
 import BarraSuperior from '../components/barraSuperior';
 import Precio from '../components/precio';
 import axios from 'axios';
@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {actualizarCommodity} from "../redux/actions"
 
 import {colors} from "../colors"
+import { Ionicons } from '@expo/vector-icons';
 
 export default function Cotizacion({ navigation }) {
 
@@ -16,17 +17,21 @@ export default function Cotizacion({ navigation }) {
     
     const [fechaInicial, setFechaInicial]= React.useState("")
     const [fechaFinal, setFechaFinal]= React.useState("")
+    const [error, setError]= React.useState(false)
+    const [cargando, setCargando]= React.useState(false)
+    
 
     const commoditys = useSelector((state) => state.commodity.commoditys)
 
-    const consolee = React.useMemo(() => {
-        console.log(commoditys)
-        console.log("holaa")
-        console.log(commoditys[0]?.commo)
-    }, [commoditys]);
 
 
     const traerDatos = async (fechaInicial, fechaFinal)=>{
+        if(!fechaInicial || fechaInicial< 1963 || fechaInicial>fechaFinal  || !fechaFinal || fechaFinal>2016 ){
+            setError(true)
+            return
+        }
+        setError(false)
+        setCargando(true)
 
         var obj = {}
         var arr=[]
@@ -44,15 +49,11 @@ export default function Cotizacion({ navigation }) {
         }
     
         for (const property in obj) {
-            // console.log(property)
             arr.push({commo:obj[property]})
         }
-        // console.log(arr)
-        // console.log(arr.length)
-        console.log("aaaa")
         
+        setCargando(false)
         dispatch(actualizarCommodity(arr))
-        // console.log(commoditys)
 
     }
 
@@ -62,29 +63,32 @@ export default function Cotizacion({ navigation }) {
                 <BarraSuperior navigation={navigation} style={{flex:1}}/>
             </View>
             <View style={{flex:9,}}>
+    
                 
                 <Text style={{flex:1.5, textAlign:"center", textAlignVertical:"center", fontSize:30, fontStyle:"italic", fontWeight:"bold",color:colors.fuerte}}>Commoditys</Text>
                 
                 <View style={{flexDirection:"row", flex:0.5, marginHorizontal:"10%", justifyContent:"space-around" }}>
-                    <TextInput style={{flex:1, borderWidth:1, textAlign:"center", borderRadius:20, borderColor:colors.fuerte, borderWidth:2, }} onChangeText={setFechaInicial} placeholder='Desde' keyboardType="numeric" />
-                    <TextInput style={{flex:1, borderWidth:1, textAlign:"center", borderRadius:20, borderColor:colors.fuerte, borderWidth:2,}} onChangeText={setFechaFinal} placeholder='Hasta' keyboardType="numeric" />
+                    <TextInput style={{flex:1, borderWidth:1, textAlign:"center", borderRadius:20, borderColor:colors.fuerte, borderWidth:2,minHeight:30 }} onChangeText={setFechaInicial} placeholder='Desde' keyboardType="numeric" />
+                    <TextInput style={{flex:1, borderWidth:1, textAlign:"center", borderRadius:20, borderColor:colors.fuerte, borderWidth:2,minHeight:30}} onChangeText={setFechaFinal} placeholder='Hasta' keyboardType="numeric" />
                 </View>
             
-                <TouchableOpacity style={{flex:1, justifyContent:"center", alignItems:"center", }} onPress={()=> traerDatos(fechaInicial, fechaFinal)}>
-                    <Text style={{textAlign:"center", fontSize:20,textAlignVertical:"center", backgroundColor:colors.primario, padding:"2%", color:colors.blanco, borderRadius:20}}>Buscar</Text>
+                <TouchableOpacity style={{flex:1, justifyContent:"center", alignItems:"center", marginTop:"5%" }} onPress={()=> traerDatos(fechaInicial, fechaFinal)}>
+                    <View style={{backgroundColor:colors.primario, padding:"2%", borderRadius:100}}>
+                        <Ionicons name="search" size={24} color="black" />
+                    </View>
                 </TouchableOpacity>
-                {/* <View style={{flex:1, backgroundColor:"red",justifyContent:"center", alignItems:"center", width:"100%"}}> */}
+                    {error &&<Text style={{textAlign:"center", fontSize:20,textAlignVertical:"center", padding:"2%", color:colors.fuerte, borderRadius:20}}>Ingresar fecha desde 1963 hasta 2016</Text>}
 
                 <View style={{flex:7,marginVertical:"2%", paddingVertical:"10%"}}>
-                    <ScrollView style={{}}> 
-
-                        
-                        {commoditys[0] && commoditys.map((comm)=> 
+                    {cargando && 
+                        <View style={{flex: 1, justifyContent:"center", alignItems:"center"}}>
+                          <Image style={{width: 100,height: 100,}}  source={require('../loading-12.gif')} />
+                        </View>
+                    }
+                    <ScrollView style={{}}>
+                        {!cargando && commoditys[0] && commoditys.map((comm)=> 
                              <Precio style={{flex:1}} status={false} key={comm.commo[0].commodity} nombre={comm.commo[0].commodity}   datos={comm}/> 
                         )} 
-                       
-
-
                     </ScrollView>
                 </View>
 

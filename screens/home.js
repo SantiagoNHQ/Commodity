@@ -14,8 +14,6 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 export default function HomeScreen({ navigation }) {
 
-    const [fechaInicial, setFechaInicial]= React.useState("")
-    const [fechaFinal, setFechaFinal]= React.useState("")
 
     return (
       <View style={{ flex: 10, maxWidth:"100%", }}>
